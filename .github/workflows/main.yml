@@ -1,0 +1,52 @@
+name: Prefect Flows
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  AWS_DEFAULT_REGION: us-east-2
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  build-prefect-flows:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          cache: pip
+
+      - name: Configure IAM credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          role-duration-seconds: 1200
+
+      - name: Authenticate ECR
+        id: authenticate-ecr
+        run: |
+          account_id=$(aws sts get-caller-identity --query Account --output text)
+          ECR_REGISTRY=$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+          aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY
+          echo "::set-output name=ECR_REGISTRY::$ECR_REGISTRY"
+
+      - name: Deploy Prefect Dockerized flows
+        uses: aldwyn/prefect-docker-deploy@main
+        env:
+          PREFECT__CLOUD__API_KEY: ${{ secrets.PREFECT__CLOUD__API_KEY }}
+        with:
+          prefect-project-name: main
+          enable-dask-executor: "true"
+          docker-storage-kwargs: |
+            registry_url: "${{ steps.authenticate-ecr.outputs.ECR_REGISTRY }}"
+            image_name: "prefect"
+            dockerfile: "Dockerfile"
+            dockerignore: ".dockerignore"

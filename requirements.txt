@@ -1,0 +1,6 @@
+prefect[kubernetes]
+pandas==1.3.5
+numpy==1.22.1
+scikit-learn==1.0.2
+boto3==1.20.46
+awswrangler==2.14.0
