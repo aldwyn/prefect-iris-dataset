@@ -59,6 +59,4 @@ with Flow("data-engineering") as flow:
 
 
 if __name__ == '__main__':
-    # flow.visualize()
-    state = flow.run()
-    print(state.__dict__)
+    flow.run()

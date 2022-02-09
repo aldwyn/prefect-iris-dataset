@@ -48,5 +48,3 @@ jobs:
           docker-storage-kwargs: |
             registry_url: "${{ steps.authenticate-ecr.outputs.ECR_REGISTRY }}"
             image_name: "prefect"
-            dockerfile: "Dockerfile"
-            dockerignore: ".dockerignore"

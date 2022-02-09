@@ -87,12 +87,6 @@ with Flow("data-science") as flow:
         'test_y': [],
     })
 
-    # train_test_dict = (
-    #     LocalResult()
-    #     .read(location="split_data.prefect")
-    #     .value
-    # )
-
     # Load data
     train_x = train_test_dict["train_x"]
     train_y = train_test_dict["train_y"]
@@ -105,5 +99,5 @@ with Flow("data-science") as flow:
     report_accuracy(predictions, test_y)
 
 
-# if __name__ == '__main__':
-#     flow.run()
+if __name__ == '__main__':
+    flow.run()
