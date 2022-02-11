@@ -44,7 +44,5 @@ jobs:
           PREFECT__CLOUD__API_KEY: ${{ secrets.PREFECT__CLOUD__API_KEY }}
         with:
           prefect-project-name: main
-          enable-dask-executor: "true"
-          docker-storage-kwargs: |
-            registry_url: "${{ steps.authenticate-ecr.outputs.ECR_REGISTRY }}"
-            image_name: "prefect"
+          # enable-dask-executor: "true"
+          docker-registry-url: ${{ steps.authenticate-ecr.outputs.ECR_REGISTRY }}
