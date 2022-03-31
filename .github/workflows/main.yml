@@ -7,6 +7,7 @@ on:
 env:
   AWS_DEFAULT_REGION: us-east-2
 
+# Mandatory for IAM AssumeWebIdentity
 permissions:
   id-token: write
   contents: write
@@ -21,7 +22,6 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: "3.8"
-          cache: pip
 
       - name: Configure IAM credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -43,8 +43,8 @@ jobs:
         env:
           PREFECT__CLOUD__API_KEY: ${{ secrets.PREFECT__CLOUD__API_KEY }}
         with:
-          prefect-project-name: main
-          enable-dask-executor: "true"
-          docker-storage-kwargs: |
-            registry_url: "${{ steps.authenticate-ecr.outputs.ECR_REGISTRY }}"
-            image_name: "prefect"
+          prefect-project-name: ${{ github.repository }}
+          create-prefect-project: "true"
+          docker-registry-url: ${{ steps.authenticate-ecr.outputs.ECR_REGISTRY }}
+          flows-root-directory: .
+          dockerfile-path: Dockerfile
